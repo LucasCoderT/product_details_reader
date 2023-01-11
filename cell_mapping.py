@@ -1,6 +1,6 @@
 import typing
 
-from processors import calculate_days_on_hand, calculate_buy_box_color
+from processors import calculate_days_on_hand, calculate_buy_box_color, apply_number_style
 from my_types import MappedCell
 
 OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
@@ -37,7 +37,8 @@ OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
     {
         'column_name': 'Units Sold Last 30 Days',
         'file_name': 'restock_report',
-        'original_column_name': 'Units Sold Last 30 Days'
+        'original_column_name': 'Units Sold Last 30 Days',
+        'processor': apply_number_style
     },
     {
         'column_name': 'CURRENT_VELOCITY',
@@ -47,7 +48,8 @@ OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
     {
         'column_name': 'Total Units',
         'file_name': 'restock_report',
-        'original_column_name': 'Total Units'
+        'original_column_name': 'Total Units',
+        'processor': apply_number_style
     },
     {
         'column_name': 'Days on Hand',
@@ -56,22 +58,26 @@ OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
     {
         'column_name': 'Quantity Available',
         'file_name': 'inventory_file',
-        'original_column_name': 'Quantity Available'
+        'original_column_name': 'Quantity Available',
+        'processor': apply_number_style,
     },
     {
         'column_name': 'COST',
         'file_name': 'informed_csv',
         'original_column_name': 'COST',
+        'processor': apply_number_style,
     },
     {
         'column_name': 'MIN_PRICE',
         'file_name': 'informed_csv',
         'original_column_name': 'MIN_PRICE',
+        'processor': apply_number_style,
     },
     {
         'column_name': 'CURRENT_PRICE',
         'file_name': 'informed_csv',
         'original_column_name': 'CURRENT_PRICE',
+        'processor': apply_number_style,
     },
     {
         'column_name': 'BUY_BOX_PRICE',
@@ -83,5 +89,6 @@ OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
         'column_name': 'MAX_PRICE',
         'file_name': 'informed_csv',
         'original_column_name': 'MAX_PRICE',
+        'processor': apply_number_style,
     }
 ]

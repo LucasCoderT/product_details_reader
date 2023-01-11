@@ -19,9 +19,7 @@ def clean_value(value: str) -> str:
     """Remove all spaces and newlines from the value."""
     if value is None:
         return ''
-    if isinstance(value, str):
-        return value.replace(" ", "").replace("\n", "")
-    return value
+    return value.strip().replace("\n", "") if isinstance(value, str) else value
 
 
 def sanitize_names(name: typing.Any) -> str:
