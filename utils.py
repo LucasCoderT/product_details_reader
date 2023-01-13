@@ -23,6 +23,11 @@ def clean_value(value: str) -> str:
 
 
 def sanitize_names(name: typing.Any) -> str:
+    """
+    Sanitizes a name by removing all spaces around and special characters.
+    :param name: The name to sanitize will be cast to a string
+    :return:  The sanitized name
+    """
     sanitized_name = str(name)
 
     if not sanitized_name:
@@ -38,12 +43,21 @@ def sanitize_names(name: typing.Any) -> str:
     return sanitized_name
 
 
-def transform_csv_to_xslx(csv_file):
-    """Takes a csv file and creates an openpyxl Workbook object from it"""
-    with open(csv_file, 'r') as f:
+def transform_csv_to_xslx(file_path: str) -> Workbook:
+    """
+    Takes a file and creates an openpyxl Workbook object from it
+
+    Accepts csv, tsv, and txt files
+
+    :param file_path: The path to the file
+    :return: A Workbook object
+    """
+    with open(file_path, 'r', encoding='utf-8') as f:
         reader = csv.reader(f, delimiter='\t')
         wb = openpyxl.Workbook()
         ws = wb.active
+        # Have to use a while loop because the file has a lot of UnicodeDecodeErrors,
+        # and we cannot capture errors during a for loop
         while True:
             try:
                 try:
@@ -56,13 +70,20 @@ def transform_csv_to_xslx(csv_file):
         return wb
 
 
-def read_xslx_file(xlsx_file: str | Workbook, **kwargs):
-    """Takes a xlsx file and returns a Workbook object"""
+def read_xslx_file(xlsx_file: str | Workbook, **kwargs) -> typing.List[dict]:
+    """
+    Takes a xlsx file and returns a Workbook object
+    :param xlsx_file: The path to the file or a Workbook object
+    :param kwargs:  Any additional arguments to pass to the load_workbook function
+    :return:  A list of dictionaries representing the rows in the file
+    """
     if isinstance(xlsx_file, str):
         wb = openpyxl.load_workbook(xlsx_file, **kwargs)
     else:
         wb = xlsx_file
     ws = wb.active
+    if ws is None:
+        ws = wb.create_sheet(title='Worksheet1', index=0) if len(wb.worksheets) == 0 else wb.worksheets[0]
     rows = list(ws.rows)
     header = [sanitize_names(cell.value) for cell in rows[0]]
     return [
@@ -71,8 +92,12 @@ def read_xslx_file(xlsx_file: str | Workbook, **kwargs):
     ]
 
 
-def find_file(file_name: str):
-    """Finds the closest matching file in the current directory"""
+def find_file(file_name: str) -> typing.Optional[str]:
+    """
+    Finds the closest matching file in the current directory
+    :param file_name: The name of the file to find
+    :return: The path to the file
+    """
     for root, dirs, files in os.walk("./files"):
         if closest_match := difflib.get_close_matches(file_name, files, n=1):
             closest_match: typing.List[str]
@@ -80,14 +105,20 @@ def find_file(file_name: str):
     return None
 
 
-def read_report(file_name: str, **kwargs):
+def read_report(file_name: str, **kwargs) -> typing.List[dict]:
+    """
+    Reads a report file and returns a list of dictionaries
+    :param file_name: The name of the file to read
+    :param kwargs: Any additional arguments to pass to the read_xslx_file function
+    :return: A list of dictionaries representing the rows in the file
+    """
     file_path = find_file(file_name)
 
     if not file_path:
         raise FileNotFoundError(f"Could not find file {file_name}")
 
-    if file_path.endswith(".xlsx"):
+    if file_path.endswith((".xlsx", ".xls")):
         return read_xslx_file(file_path, **kwargs)
-    elif file_path.endswith((".csv", ".txt")):
+    elif file_path.endswith((".csv", ".txt", '.tsv')):
         wb = transform_csv_to_xslx(file_path)
         return read_xslx_file(wb, **kwargs)

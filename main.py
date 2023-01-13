@@ -1,5 +1,4 @@
 import collections
-import contextlib
 import typing
 
 from openpyxl.cell import Cell
@@ -24,8 +23,6 @@ def map_row(
     restock_row = row_data['restock_row']
     inventory_row = row_data['inventory_row']
     informed_row = row_data['informed_row']
-    if not all([restock_row, inventory_row, informed_row]):
-        raise ValueError("Not all rows were found")
     mapping = {
         'restock_report': restock_row,
         'inventory_file': inventory_row,
@@ -39,8 +36,10 @@ def map_row(
         original_column_name = cell['original_column_name']
         if original_column_name is None:
             original_column_name = cell['column_name']
-        output_row_data[cell['column_name']] = mapping[file_name][original_column_name]
-
+        try:
+            output_row_data[cell['column_name']] = mapping[file_name][original_column_name]
+        except KeyError:
+            pass
     # We have to wait for the row to be completely mapped so that we can process it
     return output_row_data
 
@@ -81,11 +80,8 @@ def main():
 
     # Process rows
     for row_data in matched_row_data.values():
-        try:
-            mapped_row = map_row(row_data)
-            output_mapping.append(mapped_row)
-        except ValueError:
-            invalid_rows.append(row_data)
+        mapped_row = map_row(row_data)
+        output_mapping.append(mapped_row)
 
     # Create Output Workbook
     headers = list(generate_dict().keys())

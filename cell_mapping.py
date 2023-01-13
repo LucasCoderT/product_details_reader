@@ -1,6 +1,9 @@
 import typing
 
-from processors import calculate_days_on_hand, calculate_buy_box_color, apply_number_style
+from processors import \
+    calculate_days_on_hand, \
+    calculate_buy_box_color, \
+    apply_number_style
 from my_types import MappedCell
 
 OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
