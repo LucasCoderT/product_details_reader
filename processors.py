@@ -1,10 +1,11 @@
+import contextlib
 import typing
 
 from openpyxl.cell import Cell
-from openpyxl.styles import Color, Fill, PatternFill
+from openpyxl.styles import PatternFill
 
-from my_types import Row, GREEN_COLOR, RED_COLOR, ORANGE_COLOR
-from utils import lower_clean_cell_value
+from my_types import Row, GREEN_COLOR, RED_COLOR, ORANGE_COLOR, MatchedRow
+from utils import lower_clean_cell_value, generate_mapped_cell_dict
 
 
 def find_all_rows_with_matching_skus(skus: typing.List[str], rows: typing.Iterable[Row], *, prefix: str = None) -> \
@@ -90,3 +91,38 @@ def apply_number_style(row: Row, cell: Cell) -> typing.NoReturn:
     cell.number_format = '0.00'
     if cell.value:
         cell.value = float(cell.value)
+
+
+def process_row(mapped_row: dict, cell: Cell, column_name: str):
+    from cell_mapping import OUTPUT_MAPPED_CELLS
+    for mapped_cell in [mapped_cell for mapped_cell in OUTPUT_MAPPED_CELLS if
+                        mapped_cell['column_name'] == column_name]:
+        if processor := mapped_cell.get('processor'):
+            processor(mapped_row, cell)
+
+
+def map_row(
+        row_data: MatchedRow,
+) -> dict:
+    from cell_mapping import OUTPUT_MAPPED_CELLS
+    output_row_data = generate_mapped_cell_dict()
+    restock_row = row_data['restock_row']
+    inventory_row = row_data['inventory_row']
+    informed_row = row_data['informed_row']
+    mapping = {
+        'restock_report': restock_row,
+        'inventory_file': inventory_row,
+        'informed_csv': informed_row
+    }
+
+    for cell in OUTPUT_MAPPED_CELLS:
+        file_name = cell.get('file_name')
+        if file_name is None:
+            continue
+        original_column_name = cell['original_column_name']
+        if original_column_name is None:
+            original_column_name = cell['column_name']
+        with contextlib.suppress(KeyError):
+            output_row_data[cell['column_name']] = mapping[file_name][original_column_name]
+    # We have to wait for the row to be completely mapped so that we can process it
+    return output_row_data

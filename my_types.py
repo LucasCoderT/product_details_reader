@@ -1,5 +1,5 @@
 import typing
-
+from enum import Enum
 from openpyxl.cell import Cell
 
 AcceptedFileNames: typing.TypeAlias = typing.Literal[
@@ -7,6 +7,14 @@ AcceptedFileNames: typing.TypeAlias = typing.Literal[
     'inventory_file',
     'informed_csv'
 ]
+
+
+class AcceptedMarketplaces(Enum):
+    """Supported Marketplaces"""
+    us = 'us'
+    ca = 'ca'
+    mx = 'mx'
+
 
 Row: typing.TypeAlias = dict[str, typing.AnyStr]
 Processor: typing.TypeAlias = typing.Optional[typing.Callable[[Row, Cell], typing.NoReturn]]
