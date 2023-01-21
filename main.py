@@ -12,12 +12,12 @@ from utils import read_report, generate_mapped_cell_dict, generate_row_data_dict
 
 
 def main():
-    output_mapping: list = []
     # Read files
     restock_report = read_report('restock_report', read_only=True)
     inventory_file = read_report('inventory_file', read_only=True)
     informed_csv = read_report('informed_csv', read_only=True)
 
+    # Find SKUs
     try:
         skus = find_restock_skus(restock_report)
     except KeyError:
@@ -42,24 +42,32 @@ def main():
 
     # Process rows
     print('Processing rows', end='')
+    output_mapping: list = []
     for row_data in matched_row_data.values():
         mapped_row = map_row(row_data)
         output_mapping.append(mapped_row)
     print('...Done')
     # Create Output Workbook
+
     print('Creating output workbook')
+    # Creates the headers
     headers = list(generate_mapped_cell_dict().keys())
+    # Creates the workbook and worksheet
     wb = Workbook()
     ws: Worksheet = wb.active
+    # Appends the headers to the worksheet
     ws.append(headers)
+    # Appends the rows to the worksheet
     for row in output_mapping:
         ws.append(list(row.values()))
+    # Zips the rows with the output mapping
     zipped_rows = zip(ws.iter_rows(min_row=2), output_mapping)
     bar = progressbar.progressbar(zipped_rows, max_value=len(output_mapping))
     # Loop over rows to process them via their processor in OUTPUT_MAPPED_CELLS
     for ws_row, output_row in bar:
         for ws_cell, output_cell in zip(ws_row, output_row.keys()):
             process_row(output_row, ws_cell, headers[ws_cell.col_idx - 1])
+    # Save the workbook
     now = datetime.now()
     output_file_name = f'output_{now.strftime("%Y-%m-%d_%H-%M")}.xlsx'
     wb.save(output_file_name)
