@@ -1,14 +1,12 @@
-import contextlib
 import csv
 import difflib
 import os
 import typing
 
 import openpyxl
-import progressbar
 from openpyxl.workbook import Workbook
 
-from my_types import AcceptedMarketplaces, MatchedRow
+from my_types import AcceptedMarketplaces
 
 
 def sanitize_cell_value(value: str) -> str:
@@ -152,3 +150,4 @@ def pick_marketplace():
             print(f"Marketplace {marketplace} is not valid")
             continue
         return AcceptedMarketplaces[marketplace]
+
