@@ -26,11 +26,10 @@ def find_all_rows_with_matching_skus(skus: typing.List[str], rows: typing.Iterab
         if not cols:
             cols = [key for key in row.keys() if 'sku' in key.lower()]
         for sku_cell in cols:
-            lower = lower_clean_cell_value(row[sku_cell])
-            if lower in unfounded_skus:
-                unfounded_skus.pop(lower)
-                found_rows[lower] = row
-                break
+            cell_value = lower_clean_cell_value(row[sku_cell])
+            if cell_value in unfounded_skus:
+                unfounded_skus.pop(cell_value)
+                found_rows[cell_value] = row
 
     return found_rows
 
@@ -91,7 +90,7 @@ def calculate_buy_box_color(row: Row, cell: Cell) -> typing.NoReturn:
     cell.number_format = '0.00'
 
 
-def apply_number_style(row: Row, cell: Cell) -> typing.NoReturn:
+def apply_number_style(_: Row, cell: Cell) -> typing.NoReturn:
     """Applies a number style to the cell"""
     cell.number_format = '0.00'
     if cell.value:
