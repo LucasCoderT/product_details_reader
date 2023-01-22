@@ -8,7 +8,8 @@ from my_types import Row, GREEN_COLOR, RED_COLOR, ORANGE_COLOR, MatchedRow
 from utils import lower_clean_cell_value, generate_mapped_cell_dict
 
 
-def find_all_rows_with_matching_skus(skus: typing.List[str], rows: typing.Iterable[Row], *, prefix: str = None) -> \
+def find_all_rows_with_matching_skus(skus: typing.List[str], rows: typing.Iterable[Row], *, prefix: str = None,
+                                     market_place_id: typing.Optional[str] = None) -> \
         typing.Dict[str, Row]:
     """Finds all rows that have a matching sku from a given list of skus"""
     unfounded_skus = {
@@ -18,6 +19,10 @@ def find_all_rows_with_matching_skus(skus: typing.List[str], rows: typing.Iterab
     cols = []
     found_rows = {}
     for row in rows:
+        if market_place_id:
+            row_market_place_id = get_cell(row, 'MARKETPLACE_ID')
+            if row_market_place_id and row_market_place_id != market_place_id:
+                continue
         if not cols:
             cols = [key for key in row.keys() if 'sku' in key.lower()]
         for sku_cell in cols:

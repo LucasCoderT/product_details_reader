@@ -6,8 +6,6 @@ import typing
 import openpyxl
 from openpyxl.workbook import Workbook
 
-from my_types import AcceptedMarketplaces
-
 
 def sanitize_cell_value(value: str) -> str:
     return clean_value(sanitize_names(value))
@@ -141,13 +139,16 @@ def generate_row_data_dict() -> dict:
 
 def pick_marketplace():
     """Picks marketplace from user input"""
-    accepted_values = [mk.value.lower() for mk in AcceptedMarketplaces]
     while True:
-        marketplace = input(f"Enter marketplace: (Accepted values: {','.join(accepted_values)}) or type quit to exit")
+        marketplace = input("Enter marketplace ID or (quit to exit): ")
         if marketplace == 'quit':
-            break
-        if marketplace.lower() not in accepted_values:
-            print(f"Marketplace {marketplace} is not valid")
+            exit(0)
+        if not marketplace:
+            print("Please enter a marketplace ID")
             continue
-        return AcceptedMarketplaces[marketplace]
+        if not marketplace.isdigit():
+            print("Please enter a valid marketplace ID")
+            continue
+        return int(marketplace)
+
 

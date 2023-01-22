@@ -19,7 +19,8 @@ def read_files():
     return restock_report, inventory_file, informed_csv
 
 
-def find_skus(restock_report: typing.List[dict], inventory_file, informed_csv):
+def find_skus(restock_report: typing.List[dict], inventory_file, informed_csv, *,
+              market_place_id: typing.Optional[str] = None):
     # Find SKUs
     try:
         skus = find_restock_skus(restock_report)
@@ -30,7 +31,8 @@ def find_skus(restock_report: typing.List[dict], inventory_file, informed_csv):
     matched_row_data: typing.Dict[str, MatchedRow] = collections.defaultdict(generate_row_data_dict)
     matched_restock_rows = find_all_rows_with_matching_skus(skus, restock_report)
     matched_inventory_rows = find_all_rows_with_matching_skus(skus, inventory_file, prefix="Parsing Inventory file")
-    matched_informed_rows = find_all_rows_with_matching_skus(skus, informed_csv, prefix="Parsing Informed file")
+    matched_informed_rows = find_all_rows_with_matching_skus(skus, informed_csv, prefix="Parsing Informed file",
+                                                             market_place_id=market_place_id, )
 
     # Store data
     # Restock file

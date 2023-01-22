@@ -8,14 +8,6 @@ AcceptedFileNames: typing.TypeAlias = typing.Literal[
     'informed_csv'
 ]
 
-
-class AcceptedMarketplaces(Enum):
-    """Supported Marketplaces"""
-    us = 'us'
-    ca = 'ca'
-    mx = 'mx'
-
-
 Row: typing.TypeAlias = dict[str, typing.AnyStr]
 Processor: typing.TypeAlias = typing.Optional[typing.Callable[[Row, Cell], typing.NoReturn]]
 FileName: typing.TypeAlias = typing.Optional[AcceptedFileNames]
