@@ -79,11 +79,13 @@ def calculate_buy_box_color(row: Row, cell: Cell) -> typing.NoReturn:
     buy_box_price = float(buy_box_price_cell)
     min_price = float(min_price)
     max_price = float(max_price)
-    # if min_price < buy_box_price < max_price colour green:
+    # if min_price < buy_box_price < max_price colour green
     if min_price < buy_box_price < max_price:
         color = GREEN_COLOR
+    # if min_price >= buy_box_price colour red
     elif min_price >= buy_box_price:
         color = RED_COLOR
+    # else color orange
     else:
         color = ORANGE_COLOR
     cell.fill = PatternFill(start_color=color, end_color=color, fill_type='solid')
