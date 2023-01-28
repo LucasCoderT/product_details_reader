@@ -11,7 +11,12 @@ from processors import find_restock_skus, find_all_rows_with_matching_skus, map_
 from utils import read_report, generate_row_data_dict, generate_mapped_cell_dict
 
 
-def read_files():
+def read_files() -> typing.Tuple[typing.List[dict], typing.List[dict], typing.List[dict]]:
+    """
+    Reads all files and returns them as a tuple
+
+    :return: tuple of all files
+    """
     # Read files
     restock_report = read_report('restock_report', read_only=True)
     inventory_file = read_report('inventory_file', read_only=True)
@@ -20,18 +25,26 @@ def read_files():
 
 
 def find_skus(restock_report: typing.List[dict], inventory_file, informed_csv, *,
-              market_place_id: typing.Optional[str] = None):
+              market_place_id: typing.Optional[str] = None) -> typing.Dict[str, MatchedRow]:
+    """
+    Finds all skus in the restock report and finds all rows in the inventory file that have a matching sku.
+    :param restock_report:  Restock report
+    :param inventory_file:  Inventory file
+    :param informed_csv:  Informed csv
+    :param market_place_id:  marketplace id
+    :return:  Dict of matched rows
+    """
     # Find SKUs
     try:
         skus = find_restock_skus(restock_report)
     except KeyError:
         print("No SKUs found in restock report")
-        return
+        return {}
     # Find matching rows
     matched_row_data: typing.Dict[str, MatchedRow] = collections.defaultdict(generate_row_data_dict)
     matched_restock_rows = find_all_rows_with_matching_skus(skus, restock_report)
-    matched_inventory_rows = find_all_rows_with_matching_skus(skus, inventory_file, prefix="Parsing Inventory file")
-    matched_informed_rows = find_all_rows_with_matching_skus(skus, informed_csv, prefix="Parsing Informed file",
+    matched_inventory_rows = find_all_rows_with_matching_skus(skus, inventory_file)
+    matched_informed_rows = find_all_rows_with_matching_skus(skus, informed_csv,
                                                              market_place_id=market_place_id, )
 
     # Store data
@@ -49,6 +62,11 @@ def find_skus(restock_report: typing.List[dict], inventory_file, informed_csv, *
 
 
 def process_rows(matched_row_data) -> typing.List[dict]:
+    """
+    Processes all rows in matched_row_data by mapping them and then processing them.
+    :param matched_row_data:  Dict of matched rows
+    :return:  List of mapped rows
+    """
     # Process rows
     print('Processing rows', end='')
     output_mapping: list = []
@@ -59,7 +77,12 @@ def process_rows(matched_row_data) -> typing.List[dict]:
     return output_mapping
 
 
-def create_output_workbook(output_mapping):
+def create_output_workbook(output_mapping: typing.List[dict]) -> typing.NoReturn:
+    """
+    Creates the output workbook and saves it to a file.
+    :param output_mapping: List of mapped rows
+    :return: None
+    """
     # Create Output Workbook
 
     print('Creating output workbook')

@@ -6,17 +6,34 @@ import typing
 import openpyxl
 from openpyxl.workbook import Workbook
 
+from my_types import RowDataDict
+
 
 def sanitize_cell_value(value: str) -> str:
+    """
+    Sanitizes a cell value by removing all spaces and newlines
+    :param value: The value to sanitize
+    :return: The sanitized value
+    """
     return clean_value(sanitize_names(value))
 
 
 def lower_clean_cell_value(value: str) -> str:
+    """
+    Sanitizes a cell value by removing all spaces and newlines and lower casing the value
+
+    :param value: The value to sanitize
+    :return:  The sanitized value
+    """
     return sanitize_cell_value(value).lower()
 
 
 def clean_value(value: str) -> str:
-    """Remove all spaces and newlines from the value."""
+    """
+    Remove all spaces and newlines from the value.
+    :param value: The value to clean
+    :return: The cleaned value
+    """
     if value is None:
         return ''
     return value.strip().replace("\n", "") if isinstance(value, str) else value
@@ -128,12 +145,19 @@ def read_report(file_name: str, **kwargs) -> typing.List[dict]:
 
 
 def generate_mapped_cell_dict() -> dict:
-    """Generates a template dictionary from OUTPUT_MAPPED_CELLS column_name"""
+    """
+    Generates a template dictionary from OUTPUT_MAPPED_CELLS column_name
+    :return: A dictionary with the column names as keys and empty strings as values
+    """
     from cell_mapping import OUTPUT_MAPPED_CELLS
     return {cell['column_name']: '' for cell in OUTPUT_MAPPED_CELLS}
 
 
-def generate_row_data_dict() -> dict:
+def generate_row_data_dict() -> RowDataDict:
+    """
+    Generates a template dictionary for row data
+    :return:  A dictionary with the keys inventory_row, informed_row, and restock_row
+    """
     return {'inventory_row': {}, 'informed_row': {}, 'restock_row': {}}
 
 

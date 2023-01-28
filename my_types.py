@@ -1,5 +1,4 @@
 import typing
-from enum import Enum
 from openpyxl.cell import Cell
 
 AcceptedFileNames: typing.TypeAlias = typing.Literal[
@@ -11,7 +10,11 @@ AcceptedFileNames: typing.TypeAlias = typing.Literal[
 Row: typing.TypeAlias = dict[str, typing.AnyStr]
 Processor: typing.TypeAlias = typing.Optional[typing.Callable[[Row, Cell], typing.NoReturn]]
 FileName: typing.TypeAlias = typing.Optional[AcceptedFileNames]
-
+RowDataDict = typing.TypedDict('RowDataDict', {
+    'inventory_row': Row,
+    'informed_row': Row,
+    'restock_row': Row
+})
 GREEN_COLOR = "00FF00"
 RED_COLOR = "FF0000"
 ORANGE_COLOR = "FFA500"

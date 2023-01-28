@@ -5,7 +5,9 @@ from processors import \
     calculate_buy_box_color, \
     apply_number_style
 from my_types import MappedCell
-
+"""
+This file contains a list of all the cells that are mapped from one file to another.
+"""
 OUTPUT_MAPPED_CELLS: typing.List[MappedCell] = [
     {
         'column_name': 'Merchant SKU',
