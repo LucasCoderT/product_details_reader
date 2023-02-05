@@ -1,6 +1,7 @@
 import csv
 import difflib
 import os
+import traceback
 import typing
 
 import openpyxl
@@ -104,12 +105,15 @@ def read_xslx_file(xlsx_file: str | Workbook, **kwargs) -> typing.List[dict]:
     rows = list(ws.rows)
     header = [sanitize_names(cell.value) for cell in rows[0]]
     try:
-        return [
+        result = [
             dict(zip(header, [clean_value(cell.value) for cell in row]))
             for row in rows[1:]
         ]
-    finally:
         print("✅")
+        return result
+    except Exception as error:
+        print("❌")
+        traceback.print_tb(error.__traceback__)
 
 
 def find_file(file_name: str) -> typing.Optional[str]:
