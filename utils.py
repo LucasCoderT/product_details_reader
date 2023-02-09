@@ -10,7 +10,7 @@ from openpyxl.workbook import Workbook
 from my_types import RowDataDict
 
 
-def sanitize_cell_value(value: str) -> str:
+def sanitize_cell_value(value: typing.Optional[str]) -> str:
     """
     Sanitizes a cell value by removing all spaces and newlines
     :param value: The value to sanitize
@@ -19,7 +19,7 @@ def sanitize_cell_value(value: str) -> str:
     return clean_value(sanitize_names(value))
 
 
-def lower_clean_cell_value(value: str) -> str:
+def lower_clean_cell_value(value: typing.Optional[str]) -> str:
     """
     Sanitizes a cell value by removing all spaces and newlines and lower casing the value
 
@@ -29,7 +29,7 @@ def lower_clean_cell_value(value: str) -> str:
     return sanitize_cell_value(value).lower()
 
 
-def clean_value(value: str) -> str:
+def clean_value(value: typing.Optional[str]) -> str:
     """
     Remove all spaces and newlines from the value.
     :param value: The value to clean
@@ -46,6 +46,7 @@ def sanitize_names(name: typing.Any) -> str:
     :param name: The name to sanitize will be cast to a string
     :return:  The sanitized name
     """
+    name = name or ''
     sanitized_name = str(name)
 
     if not sanitized_name:

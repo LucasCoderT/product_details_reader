@@ -21,7 +21,7 @@ jobs:
         pip install pyinstaller
     - name: build
       run: |
-        pyinstaller --noconfirm --onefile --console "main.py"
+        pyinstaller --noconfirm --onefile --console "main.py" --exclude-module "tests"
     - uses: actions/upload-artifact@v3
       with:
         name: reader.exe

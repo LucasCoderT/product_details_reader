@@ -81,14 +81,19 @@ def calculate_days_on_hand(row: Row, cell: Cell) -> typing.NoReturn:
     """
     total_units = get_cell(row, 'Total Units')
     units_sold = get_cell(row, 'Units Sold Last 30 Days')
-    if not total_units or not units_sold:
+    cell.number_format = '0.00'
+    if total_units is None or units_sold is None:
         cell.value = ''
         return
     total_units = float(total_units)
     units_sold = float(units_sold)
+
+    if total_units == 0 and units_sold == 0:
+        cell.value = 1
+        return
+
     try:
         result = (total_units / units_sold) * 30
-        cell.number_format = '0.00'
     except ZeroDivisionError:
         result = "Infinity"
     cell.value = result
