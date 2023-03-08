@@ -139,6 +139,19 @@ def apply_number_style(_: Row, cell: Cell) -> typing.NoReturn:
         cell.value = float(cell.value)
 
 
+def validate_number(value: typing.Any) -> bool:
+    """
+    Validates that a value is a number
+    :param value: The value to validate
+    :return: True if the value is a number, False otherwise
+    """
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
 def process_row(mapped_row: dict, cell: Cell, column_name: str) -> typing.NoReturn:
     """
     Processes a row
@@ -151,7 +164,38 @@ def process_row(mapped_row: dict, cell: Cell, column_name: str) -> typing.NoRetu
     for mapped_cell in [mapped_cell for mapped_cell in OUTPUT_MAPPED_CELLS if
                         mapped_cell['column_name'] == column_name]:
         if processor := mapped_cell.get('processor'):
-            processor(mapped_row, cell)
+            try:
+                processor(mapped_row, cell)
+                return True
+            except Exception as error:
+                print(
+                    f'Error processing cell {column_name} with value {cell.value} (coordinates: {cell.coordinate})'
+                    f' with error: {error} Skipping...')
+                return False
+
+
+def validate_row(row: Row) -> bool:
+    """
+    Validates a row
+    :param row: The row to validate
+    :return: bool indicating if the row is valid meaning all cells in the row are valid
+    """
+    from cell_mapping import OUTPUT_MAPPED_CELLS
+    valid_cells = []
+    for mapped_cell in OUTPUT_MAPPED_CELLS:
+        column_name = mapped_cell['column_name']
+        if validator := mapped_cell.get('validator'):
+            try:
+                is_valid = validator(cell) if (cell := get_cell(row, column_name)) is not None else False
+                if not is_valid and cell:
+                    print(f'Invalid cell {column_name} with value: {cell} skipping...')
+                    valid_cells.append(False)
+                if cell:
+                    valid_cells.append(is_valid)
+            except Exception as error:
+                print(f'Error validating {column_name} with error: {error}')
+                valid_cells.append(False)
+    return all(valid_cells)
 
 
 def map_row(

@@ -7,7 +7,7 @@ from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from my_types import MatchedRow
-from processors import find_restock_skus, find_all_rows_with_matching_skus, map_row, process_row
+from processors import find_restock_skus, find_all_rows_with_matching_skus, map_row, process_row, validate_row
 from utils import read_report, generate_row_data_dict, generate_mapped_cell_dict
 
 
@@ -72,6 +72,8 @@ def process_rows(matched_row_data) -> typing.List[dict]:
     output_mapping: list = []
     for row_data in matched_row_data.values():
         mapped_row = map_row(row_data)
+        if validate_row(mapped_row) is False:
+            continue
         output_mapping.append(mapped_row)
     print('...Done')
     return output_mapping
